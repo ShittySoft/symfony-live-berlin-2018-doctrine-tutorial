@@ -1,27 +1,26 @@
-# Basic Doctrine ORM tutorial
+# Doctrine ORM and tactical DDD concepts
 
-This tutorial will introduce you to using Doctrine ORM.
+This tutorial will introduce you to using Doctrine ORM together
+with tactical DDD concepts.
 
-Specifically, following sections will be covered:
+Our approximate plan of operation:
 
- 1. Installation
- 2. Basic concepts:
-     a. Entities
-     b. ORM components
-     c. Entity states
-     d. Transactions
- 3. Creating an entity
- 4. Saving and loading an entity
- 5. API interactions with entities
- 6. Association mapping
- 7. Lazy loading
-
-## The domain
-
-The logic inside this domain will represent a simple authentication
-layer, as well as a simple blog-post/blog-post commenting platform.
-
-See the [feature](feature) directory for requirements.
+ 1. Installation and hoping that it will go smoothly :-)
+ 2. Getting started with a simplistic "already known" 
+    `Authentication` domain, *without* ORM
+ 3. Discussion of the first implementations popping up
+ 4. Introducing some DDD concepts:
+     * Domain and Infrastructure
+     * Value Object
+     * Aggregate Root
+     * Entity
+     * Repository
+     * Read Model
+ 5. Looking at how to improve our `Authentication` code
+ 6. Wiring the ORM into our `Authentication` code
+ 7. Exploration and discussion of a new domain, one of either:
+     * Blog Post
+     * Hotel Booking
 
 ## Installation
 
