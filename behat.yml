@@ -1,0 +1,14 @@
+default:
+  suites:
+    authentication:
+      contexts:
+        - 'Test\Specification\Authentication\AuthenticationContext'
+      paths:
+        - 'feature/authentication.feature'
+    blog-post:
+      contexts:
+        - 'Test\Specification\Blog\BlogPostContext'
+        - 'Test\Specification\Blog\BlogPostCommentsContext'
+      paths:
+        - 'feature/blog-post.feature'
+        - 'feature/blog-post-comments.feature'
