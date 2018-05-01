@@ -29,5 +29,5 @@ First, [install composer](https://getcomposer.org/download/).
 After that, you can run:
 
 ```sh
-composer require doctrine/orm
+composer install
 ```
