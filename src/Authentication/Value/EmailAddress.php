@@ -31,4 +31,9 @@ final class EmailAddress
     {
         return $this->email;
     }
+
+    public function __toString() : string
+    {
+        return $this->email;
+    }
 }

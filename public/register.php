@@ -4,14 +4,17 @@ use Authentication\Aggregate\User;
 use Authentication\Value\ClearTextPassword;
 use Authentication\Value\EmailAddress;
 use Infrastructure\Authentication\ReadModel\CheckRegisteredEmailFromRepository;
-use Infrastructure\Authentication\Repository\FilesystemUsers;
+use Infrastructure\Authentication\Repository\DoctrineUsers;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $email = EmailAddress::fromEmailAddress($_POST['emailAddress']);
 $password = ClearTextPassword::fromInputPassword($_POST['password']);
 
-$users = new FilesystemUsers(__DIR__ . '/../data/users.json');
+/** @var \Doctrine\ORM\EntityManager $entityManager */
+$entityManager = require __DIR__ . '/../bootstrap.php';
+
+$users = new DoctrineUsers($entityManager, $entityManager->getRepository(User::class));
 
 $users->store(User::register($email, $password, new CheckRegisteredEmailFromRepository($users)));
 
