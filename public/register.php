@@ -2,10 +2,24 @@
 
 // registering a new user:
 
-// 1. check if a user with the same email address exists
-// 2. if not, create a user
-// 3. hash the password
-// 4. send the email to confirm activation (we will just display it)
-// 5. save the user
+$email = $_POST['emailAddress'];
+$password = $_POST['password'];
 
-// Tip: discuss - email or saving? Chicken-egg problem
+$existingUsers = json_decode(file_get_contents(__DIR__ . '/../data/users.json'), true);
+
+if (isset($existingUsers[$email])) {
+    echo 'Already registered';
+
+    return;
+}
+
+$hash = password_hash($password, \PASSWORD_DEFAULT);
+
+$existingUsers[$email] = $hash;
+
+error_log('Registration mail sent here');
+
+file_put_contents(__DIR__ . '/../data/users.json', json_encode($existingUsers));
+
+echo 'OK';
+
