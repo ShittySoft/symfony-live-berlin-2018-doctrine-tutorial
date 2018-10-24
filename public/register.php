@@ -1,11 +1,16 @@
 <?php
 
+use Authentication\Entity\User;
+use Authentication\Value\ClearTextPassword;
+use Authentication\Value\EmailAddress;
+use Infrastructure\Authentication\Repository\FilesystemUsers;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$email = $_POST['emailAddress'];
-$password = $_POST['password'];
+$email = EmailAddress::fromEmailAddress($_POST['emailAddress']);
+$password = ClearTextPassword::fromInputPassword($_POST['password']);
 
-$users = new \Infrastructure\Authentication\Repository\FilesystemUsers(__DIR__ . '/../data/users.json');
+$users = new FilesystemUsers(__DIR__ . '/../data/users.json');
 
 if ($users->exists($email)) {
     echo 'Already registered';
@@ -13,12 +18,7 @@ if ($users->exists($email)) {
     return;
 }
 
-$user = new \Authentication\Entity\User(
-    $email,
-    $password
-);
-
-$users->store($user);
+$users->store(new User($email, $password));
 
 /** @var Notifier $notify */
 // send email abstraction?

@@ -2,22 +2,26 @@
 
 namespace Authentication\Entity;
 
+use Authentication\Value\ClearTextPassword;
+use Authentication\Value\EmailAddress;
+use Authentication\Value\PasswordHash;
+
 class User
 {
-    /** @var string */
+    /** @var EmailAddress */
     public $email;
 
-    /** @var string */
+    /** @var PasswordHash */
     public $passwordHash;
 
-    public function __construct(string $email, string $password)
+    public function __construct(EmailAddress $email, ClearTextPassword $password)
     {
-        $this->email = $email;
-        $this->passwordHash = password_hash($password, \PASSWORD_DEFAULT);
+        $this->email        = $email;
+        $this->passwordHash = $password->makeHash();
     }
 
-    public function authenticate(string $password) : bool
+    public function authenticate(ClearTextPassword $password) : bool
     {
-        return password_verify($password, $this->passwordHash);
+        return $password->verify($this->passwordHash);
     }
 }

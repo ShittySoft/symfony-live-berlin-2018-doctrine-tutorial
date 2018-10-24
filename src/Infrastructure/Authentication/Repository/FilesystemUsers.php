@@ -6,6 +6,8 @@ namespace Infrastructure\Authentication\Repository;
 
 use Authentication\Entity\User;
 use Authentication\Repository\Users;
+use Authentication\Value\EmailAddress;
+use Authentication\Value\PasswordHash;
 
 final class FilesystemUsers implements Users
 {
@@ -17,23 +19,24 @@ final class FilesystemUsers implements Users
         $this->usersPath = $usersPath;
     }
 
-    public function exists(string $emailAddress) : bool
+    public function exists(EmailAddress $emailAddress) : bool
     {
-        return isset($this->existingUsers()[$emailAddress]);
+        return isset($this->existingUsers()[$emailAddress->toString()]);
     }
 
-    public function get(string $emailAddress) : User
+    public function get(EmailAddress $emailAddress) : User
     {
         $existingUsers = $this->existingUsers();
 
-        if (! isset($existingUsers[$emailAddress])) {
-            throw new \UnexpectedValueException(sprintf('User %s does not exist', $emailAddress));
+        if (! isset($existingUsers[$emailAddress->toString()])) {
+            throw new \UnexpectedValueException(sprintf('User %s does not exist', $emailAddress->toString()));
         }
 
+        /** @var User $user */
         $user = (new \ReflectionClass(User::class))->newInstanceWithoutConstructor();
 
         $user->email = $emailAddress;
-        $user->passwordHash = $existingUsers[$emailAddress];
+        $user->passwordHash = PasswordHash::fromHash($existingUsers[$emailAddress->toString()]);
 
         return $user;
     }
@@ -42,7 +45,7 @@ final class FilesystemUsers implements Users
     {
         $existingUsers = $this->existingUsers();
 
-        $existingUsers[$user->email] = $user->passwordHash;
+        $existingUsers[$user->email->toString()] = $user->passwordHash->toString();
 
         file_put_contents($this->usersPath, json_encode($existingUsers));
     }
@@ -50,6 +53,10 @@ final class FilesystemUsers implements Users
     /** @return array<string, string> */
     private function existingUsers() : array
     {
-        return json_decode(file_get_contents($this->usersPath), true);
+        $fileContentsReallyReally = file_get_contents($this->usersPath);
+
+        \assert(\is_string($fileContentsReallyReally));
+
+        return json_decode($fileContentsReallyReally, true);
     }
 }
