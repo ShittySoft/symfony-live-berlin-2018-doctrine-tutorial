@@ -1,20 +1,25 @@
 <?php
 
-$user = $_POST['emailAddress'];
+require_once __DIR__ . '/../vendor/autoload.php';
+
+$email = $_POST['emailAddress'];
 $password = $_POST['password'];
 
-$existingUsers = json_decode(file_get_contents(__DIR__ . '/../data/users.json'), true);
+$users = new \Infrastructure\Authentication\Repository\FilesystemUsers(__DIR__ . '/../data/users.json');
 
-if (!isset($existingUsers[$user])) {
+if (! $users->exists($email)) {
     echo 'Nope';
 
     return;
 }
 
-if (! password_verify($password, $existingUsers[$user])) {
+$user = $users->get($email);
+
+if (! $user->authenticate($password)) {
     echo 'Nope';
 
     return;
 }
 
-echo 'Ok';
+echo 'OK';
+

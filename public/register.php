@@ -1,25 +1,28 @@
 <?php
 
-// registering a new user:
+require_once __DIR__ . '/../vendor/autoload.php';
 
 $email = $_POST['emailAddress'];
 $password = $_POST['password'];
 
-$existingUsers = json_decode(file_get_contents(__DIR__ . '/../data/users.json'), true);
+$users = new \Infrastructure\Authentication\Repository\FilesystemUsers(__DIR__ . '/../data/users.json');
 
-if (isset($existingUsers[$email])) {
+if ($users->exists($email)) {
     echo 'Already registered';
 
     return;
 }
 
-$hash = password_hash($password, \PASSWORD_DEFAULT);
+$user = new \Authentication\Entity\User(
+    $email,
+    $password
+);
 
-$existingUsers[$email] = $hash;
+$users->store($user);
 
-error_log('Registration mail sent here');
-
-file_put_contents(__DIR__ . '/../data/users.json', json_encode($existingUsers));
+/** @var Notifier $notify */
+// send email abstraction?
+//error_log('Registration mail sent here');
 
 echo 'OK';
 
