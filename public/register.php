@@ -1,8 +1,9 @@
 <?php
 
-use Authentication\Entity\User;
+use Authentication\Aggregate\User;
 use Authentication\Value\ClearTextPassword;
 use Authentication\Value\EmailAddress;
+use Infrastructure\Authentication\ReadModel\CheckRegisteredEmailFromRepository;
 use Infrastructure\Authentication\Repository\FilesystemUsers;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -12,13 +13,7 @@ $password = ClearTextPassword::fromInputPassword($_POST['password']);
 
 $users = new FilesystemUsers(__DIR__ . '/../data/users.json');
 
-if ($users->exists($email)) {
-    echo 'Already registered';
-
-    return;
-}
-
-$users->store(new User($email, $password));
+$users->store(User::register($email, $password, new CheckRegisteredEmailFromRepository($users)));
 
 /** @var Notifier $notify */
 // send email abstraction?

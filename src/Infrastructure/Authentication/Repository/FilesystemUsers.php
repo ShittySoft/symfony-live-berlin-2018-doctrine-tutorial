@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Infrastructure\Authentication\Repository;
 
-use Authentication\Entity\User;
+use Authentication\Aggregate\User;
 use Authentication\Repository\Users;
 use Authentication\Value\EmailAddress;
 use Authentication\Value\PasswordHash;
+use ReflectionProperty;
 
 final class FilesystemUsers implements Users
 {
@@ -35,8 +36,8 @@ final class FilesystemUsers implements Users
         /** @var User $user */
         $user = (new \ReflectionClass(User::class))->newInstanceWithoutConstructor();
 
-        $user->email = $emailAddress;
-        $user->passwordHash = PasswordHash::fromHash($existingUsers[$emailAddress->toString()]);
+        $this->reflectionEmail()->setValue($user, $emailAddress);
+        $this->reflectionPasswordHash()->setValue($user, PasswordHash::fromHash($existingUsers[$emailAddress->toString()]));
 
         return $user;
     }
@@ -45,7 +46,9 @@ final class FilesystemUsers implements Users
     {
         $existingUsers = $this->existingUsers();
 
-        $existingUsers[$user->email->toString()] = $user->passwordHash->toString();
+        $existingUsers[
+            $this->reflectionEmail()->getValue($user)->toString()
+        ] = $this->reflectionPasswordHash()->getValue($user)->toString();
 
         file_put_contents($this->usersPath, json_encode($existingUsers));
     }
@@ -59,4 +62,23 @@ final class FilesystemUsers implements Users
 
         return json_decode($fileContentsReallyReally, true);
     }
+
+    private function reflectionEmail() : ReflectionProperty
+    {
+        $reflectionEmail = new ReflectionProperty(User::class, 'email');
+
+        $reflectionEmail->setAccessible(true);
+
+        return $reflectionEmail;
+    }
+
+    private function reflectionPasswordHash() : ReflectionProperty
+    {
+        $reflectionEmail = new ReflectionProperty(User::class, 'passwordHash');
+
+        $reflectionEmail->setAccessible(true);
+
+        return $reflectionEmail;
+    }
+
 }
