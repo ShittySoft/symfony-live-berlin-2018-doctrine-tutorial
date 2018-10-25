@@ -5,6 +5,11 @@ default:
         - 'Test\Specification\Authentication\AuthenticationContext'
       paths:
         - 'feature/authentication.feature'
+    authentication-ui:
+      contexts:
+        - 'Test\E2E\Authentication\AuthenticationContext'
+      paths:
+        - 'feature/authentication.feature'
     blog-post:
       contexts:
         - 'Test\Specification\Blog\BlogPostContext'
